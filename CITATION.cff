@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use DelayBudget in research, please cite the software release."
+title: "DelayBudget"
+type: software
+version: 1.0.0
+date-released: 2026-07-23
+authors:
+  - family-names: "Ortega"
+    given-names: "Tomàs"
+abstract: >-
+  A dependency-free implementation of provably minimal notification batching
+  under individual maximum-delay constraints.
+license: Apache-2.0
+repository-code: "https://github.com/TomasOrtega/DelayBudget"
+url: "https://github.com/TomasOrtega/DelayBudget"

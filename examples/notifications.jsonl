@@ -1,0 +1,4 @@
+{"id":"email-1","source":"email","arrival":0,"max_delay":1200}
+{"id":"news-1","source":"news","arrival":180,"max_delay":7200}
+{"id":"message-1","source":"messages","arrival":300,"max_delay":0}
+{"id":"email-2","source":"email","arrival":1500,"max_delay":1200}
