@@ -18,15 +18,17 @@ consume or port the core algorithm.
 ## Local workflow
 
 ```bash
-python -m pip install -e '.[dev]'
-coverage run -m unittest discover -s tests -v
-coverage report
-ruff check .
-ruff format --check .
-mypy
-python -m build
-python -m twine check dist/*
+uv sync
+uv run coverage run -m unittest discover -s tests -v
+uv run coverage report
+uv run prek -a --quiet
+uv run mypy
+uv build
+uv run twine check dist/*
 ```
+
+Run `uv run prek install` once to check staged Python files with Ruff before
+each commit. The repository's `uv.lock` keeps development and CI tools aligned.
 
 Add tests for every behavior change. Algorithmic changes must include either a
 proof argument or a counterexample to the current rule. Keep public APIs typed
