@@ -14,9 +14,11 @@ All notable changes are documented here. The format follows
 - Transactional validation and exact same-timestamp arrival semantics for the
   online state machine.
 - Atomic CLI file replacement, UTF-8 validation, and input record-size limits.
-- Strict rejection of duplicate JSON keys and non-standard JSON numbers.
+- Strict rejection of duplicate JSON keys, non-standard JSON numbers, and
+  malformed Unicode labels.
 - Python 3.14 support, static analysis, branch-coverage enforcement, and a
   tag-triggered release workflow with checksums and provenance attestations.
+- Immutable commit pinning for every external GitHub Action.
 
 ### Changed
 

@@ -66,11 +66,13 @@ cat trace.jsonl | delaybudget schedule - -o schedule.jsonl
 
 Input is intentionally strict. The CLI rejects unknown fields, duplicate JSON
 keys, duplicate IDs, non-standard JSON numbers, negative budgets, booleans used
-as integers, invalid UTF-8, and records over one million characters.
+as integers, malformed Unicode, invalid UTF-8, and records over one million
+characters.
 
 By default, the complete trace is validated before output begins. File output
 is written to a sibling temporary file, flushed to disk, and atomically replaces
-the destination only after success. Existing file permissions are preserved.
+the destination only after success. Existing file permissions are preserved;
+new files use owner-only permissions on POSIX systems.
 
 For a large trace that is already ordered by nondecreasing arrival time, use:
 

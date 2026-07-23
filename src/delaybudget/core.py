@@ -39,6 +39,22 @@ def _require_int(value: object, field: str) -> int:
     return value
 
 
+def _require_text(value: object, field: str, *, non_empty: bool = False) -> str:
+    """Return text that can be represented as well-formed UTF-8."""
+
+    if not isinstance(value, str):
+        raise TypeError(f"{field} must be a string")
+    if non_empty and not value:
+        raise ValueError(f"{field} must be non-empty")
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ValueError(
+            f"{field} must contain only valid Unicode scalar values"
+        ) from exc
+    return value
+
+
 @dataclass(frozen=True, slots=True)
 class Notification:
     """A notification with an integer arrival and non-negative delay budget.
@@ -53,18 +69,15 @@ class Notification:
     source: str = ""
 
     def __post_init__(self) -> None:
-        if not isinstance(self.id, str):
-            raise TypeError("id must be a string")
-        if not self.id:
-            raise ValueError("id must be non-empty")
-        if not isinstance(self.source, str):
-            raise TypeError("source must be a string")
-
+        identifier = _require_text(self.id, "id", non_empty=True)
+        source = _require_text(self.source, "source")
         arrival = _require_int(self.arrival, "arrival")
         max_delay = _require_int(self.max_delay, "max_delay")
         if max_delay < 0:
             raise ValueError("max_delay must be non-negative")
 
+        object.__setattr__(self, "id", identifier)
+        object.__setattr__(self, "source", source)
         object.__setattr__(self, "arrival", arrival)
         object.__setattr__(self, "max_delay", max_delay)
 

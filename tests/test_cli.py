@@ -216,6 +216,23 @@ class CliTests(unittest.TestCase):
             if os.name != "nt":
                 self.assertEqual(output_path.stat().st_mode & 0o777, 0o640)
 
+    @unittest.skipIf(os.name == "nt", "POSIX mode semantics")
+    def test_new_output_file_is_owner_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            input_path = Path(directory) / "trace.jsonl"
+            output_path = Path(directory) / "output.jsonl"
+            input_path.write_text(
+                '{"id":"n","arrival":0,"max_delay":0}\n',
+                encoding="utf-8",
+            )
+
+            exit_code = main(
+                ["schedule", str(input_path), "-o", str(output_path)]
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(output_path.stat().st_mode & 0o777, 0o600)
+
     def test_input_can_be_replaced_in_place(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "trace.jsonl"
@@ -259,6 +276,14 @@ class CliTests(unittest.TestCase):
                 )
                 self.assertIn("non-standard JSON number", stderr)
                 self.assertIn(value, stderr)
+
+    def test_unpaired_unicode_surrogate_is_rejected(self) -> None:
+        stderr = self._run_bad_input(
+            '{"id":"\\ud800","arrival":0,"max_delay":0}\n'
+        )
+
+        self.assertIn("line 1", stderr)
+        self.assertIn("valid Unicode scalar values", stderr)
 
     def test_plain_json_value_error_gets_line_context(self) -> None:
         with patch("delaybudget.cli.json.loads", side_effect=ValueError("too large")):

@@ -23,14 +23,16 @@ notification. This is the minimum hitting-set problem for intervals on a line.
 ## Optimality proof
 
 Let `I` be a remaining notification with the earliest deadline `T`. Every valid
-schedule must deliver `I` at some time `s <= T`.
+schedule must contain at least one delivery at or before `T` to serve `I`.
 
-Replace that delivery time `s` with `T`. This cannot invalidate another
-notification served at `s`: it had arrived by `s`, so it has arrived by `T`, and
-its deadline is at least `T` because `T` is the earliest remaining deadline.
+Take an optimal schedule and merge all of its delivery times at or before `T`
+into one delivery at `T`. Any notification served by one of those times had
+already arrived by `T`. Its deadline is at least `T`, because `T` is the
+earliest remaining deadline. The merged delivery is therefore valid and uses no
+more batches than the original schedule.
 
-Therefore an optimal schedule exists whose first delivery is exactly at `T`.
-That delivery may include every notification pending at `T` without creating a
+Thus an optimal schedule exists whose first delivery is exactly at `T`. That
+delivery may include every notification pending at `T` without creating a
 violation. Removing those notifications leaves the same problem on the
 remaining intervals. Repeating the argument proves that the greedy schedule
 uses the minimum number of batches.

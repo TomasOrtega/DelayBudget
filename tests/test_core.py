@@ -35,6 +35,12 @@ class NotificationTests(unittest.TestCase):
                 "n", arrival=0, max_delay=0, source=1
             )
 
+    def test_rejects_unpaired_unicode_surrogates(self) -> None:
+        with self.assertRaisesRegex(ValueError, "valid Unicode scalar values"):
+            Notification("\ud800", arrival=0, max_delay=0)
+        with self.assertRaisesRegex(ValueError, "valid Unicode scalar values"):
+            Notification("n", arrival=0, max_delay=0, source="\udfff")
+
     def test_rejects_negative_delay(self) -> None:
         with self.assertRaisesRegex(ValueError, "non-negative"):
             Notification("n", arrival=0, max_delay=-1)
