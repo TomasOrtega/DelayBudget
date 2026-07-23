@@ -40,7 +40,7 @@ delaybudget = "delaybudget.cli:main"
 
 [dependency-groups]
 dev = [
-  "coverage[toml]>=7.6,<8",
+  "coverage[toml]>=7.15.2,<8",
   "mypy>=1.15,<3",
   "prek>=0.4,<1",
   "ruff>=0.11,<1",
