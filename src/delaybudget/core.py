@@ -168,13 +168,10 @@ class OnlineScheduler:
 
         now = _require_int(now, "now")
         if self._current_time is not None and now <= self._current_time:
-            raise TimeOrderError(
-                "online scheduler times must be strictly increasing"
-            )
+            raise TimeOrderError("online scheduler times must be strictly increasing")
         if self._next_deadline is not None and now > self._next_deadline:
             raise DeadlineMissedError(
-                f"advanced to {now} after pending deadline "
-                f"{self._next_deadline}"
+                f"advanced to {now} after pending deadline {self._next_deadline}"
             )
 
         try:
@@ -192,10 +189,7 @@ class OnlineScheduler:
                     f"notification {notification.id!r} has arrival "
                     f"{notification.arrival}, expected {now}"
                 )
-            if (
-                notification.id in self._pending_ids
-                or notification.id in incoming_ids
-            ):
+            if notification.id in self._pending_ids or notification.id in incoming_ids:
                 raise DuplicateNotificationError(
                     f"duplicate pending notification id: {notification.id!r}"
                 )
@@ -247,10 +241,7 @@ def schedule_sorted(notifications: Iterable[Notification]) -> Iterator[Batch]:
         seen_ids.add(notification.id)
         last_arrival = notification.arrival
 
-        if (
-            earliest_deadline is not None
-            and earliest_deadline < notification.arrival
-        ):
+        if earliest_deadline is not None and earliest_deadline < notification.arrival:
             yield Batch(earliest_deadline, tuple(pending))
             pending.clear()
             earliest_deadline = None

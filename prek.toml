@@ -1,0 +1,28 @@
+minimum_prek_version = "0.4.0"
+
+[[repos]]
+repo = "builtin"
+hooks = [
+  { id = "check-yaml" },
+  { id = "check-toml" },
+  { id = "check-merge-conflict" },
+]
+
+[[repos]]
+repo = "local"
+hooks = [
+  {
+    id = "ruff-check",
+    name = "ruff check",
+    entry = "ruff check",
+    language = "system",
+    types_or = ["python", "pyi"],
+  },
+  {
+    id = "ruff-format",
+    name = "ruff format",
+    entry = "ruff format --check",
+    language = "system",
+    types_or = ["python", "pyi"],
+  },
+]

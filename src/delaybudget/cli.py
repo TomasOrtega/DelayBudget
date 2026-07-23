@@ -120,8 +120,7 @@ def _parser() -> argparse.ArgumentParser:
         "--assume-sorted",
         action="store_true",
         help=(
-            "require nondecreasing arrivals and stream the trace instead of "
-            "sorting it"
+            "require nondecreasing arrivals and stream the trace instead of sorting it"
         ),
     )
     return parser
@@ -147,8 +146,7 @@ def _bounded_lines(stream: TextIO) -> Iterator[tuple[int, str]]:
             content = content[:-1]
         if len(content) > _MAX_RECORD_CHARS:
             raise InputError(
-                f"line {line_number}: record exceeds "
-                f"{_MAX_RECORD_CHARS} characters"
+                f"line {line_number}: record exceeds {_MAX_RECORD_CHARS} characters"
             )
         yield line_number, line
 
@@ -186,19 +184,13 @@ def _iter_notifications(
                 f"line {line_number}: non-standard JSON number: {exc.value}"
             ) from exc
         except json.JSONDecodeError as exc:
-            raise InputError(
-                f"line {line_number}: invalid JSON: {exc.msg}"
-            ) from exc
+            raise InputError(f"line {line_number}: invalid JSON: {exc.msg}") from exc
         except RecursionError as exc:
-            raise InputError(
-                f"line {line_number}: JSON nesting is too deep"
-            ) from exc
+            raise InputError(f"line {line_number}: JSON nesting is too deep") from exc
         except ValueError as exc:
             # CPython can raise a plain ValueError for inputs such as integer
             # literals exceeding the interpreter's configured digit limit.
-            raise InputError(
-                f"line {line_number}: invalid JSON: {exc}"
-            ) from exc
+            raise InputError(f"line {line_number}: invalid JSON: {exc}") from exc
 
         if not isinstance(loaded, dict):
             raise InputError(f"line {line_number}: expected a JSON object")
@@ -228,8 +220,7 @@ def _iter_notifications(
 
         if notification.id in seen_ids:
             raise InputError(
-                f"line {line_number}: duplicate notification id: "
-                f"{notification.id!r}"
+                f"line {line_number}: duplicate notification id: {notification.id!r}"
             )
         if (
             assume_sorted
@@ -346,17 +337,19 @@ def main(argv: list[str] | None = None) -> int:
     try:
         # The output context is outermost so an in-place input file is closed
         # before its atomic replacement occurs (important on Windows).
-        with _output_context(args.output) as output_stream:
-            with _input_context(args.input) as input_stream:
-                notifications = _iter_notifications(
-                    input_stream,
-                    assume_sorted=args.assume_sorted,
-                )
-                if args.assume_sorted:
-                    batches: Iterable[Batch] = schedule_sorted(notifications)
-                else:
-                    batches = schedule(notifications)
-                _write_batches(output_stream, batches)
+        with (
+            _output_context(args.output) as output_stream,
+            _input_context(args.input) as input_stream,
+        ):
+            notifications = _iter_notifications(
+                input_stream,
+                assume_sorted=args.assume_sorted,
+            )
+            if args.assume_sorted:
+                batches: Iterable[Batch] = schedule_sorted(notifications)
+            else:
+                batches = schedule(notifications)
+            _write_batches(output_stream, batches)
     except BrokenPipeError:
         _silence_broken_pipe()
         return 0

@@ -21,16 +21,18 @@ proof and exact boundary semantics are in [ALGORITHM.md](ALGORITHM.md).
 
 ## Install
 
-From a checkout:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then
+install the command from a checkout:
 
 ```bash
-python -m pip install .
+uv tool install .
 ```
 
 For development:
 
 ```bash
-python -m pip install -e '.[dev]'
+uv sync
+uv run prek install
 ```
 
 Python 3.10 or newer is required.
@@ -152,15 +154,17 @@ integrations should keep permissions and policy decisions outside this core.
 ## Development
 
 ```bash
-python -m unittest discover -s tests -v
-coverage run -m unittest discover -s tests
-coverage report
-ruff check .
-ruff format --check .
-mypy
-python -m build
-python -m twine check dist/*
+uv run python -m unittest discover -s tests -v
+uv run coverage run -m unittest discover -s tests
+uv run coverage report
+uv run prek -a --quiet
+uv run mypy
+uv build
+uv run twine check dist/*
 ```
+
+The prek hooks run Ruff's linter and formatter checks using the versions pinned
+in `uv.lock`.
 
 The suite includes exhaustive comparison with brute force for every multiset of
 up to four integer intervals in a small horizon, plus randomized agreement

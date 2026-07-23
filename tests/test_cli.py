@@ -153,9 +153,7 @@ class CliTests(unittest.TestCase):
 
             stderr = io.StringIO()
             with redirect_stderr(stderr):
-                exit_code = main(
-                    ["schedule", str(input_path), "-o", str(output_path)]
-                )
+                exit_code = main(["schedule", str(input_path), "-o", str(output_path)])
 
             self.assertEqual(output_path.read_text(encoding="utf-8"), "keep me")
             self.assertEqual(list(Path(directory).glob(".output.jsonl.*.tmp")), [])
@@ -183,9 +181,7 @@ class CliTests(unittest.TestCase):
                 patch("delaybudget.cli._write_batches", side_effect=fail_after_write),
                 redirect_stderr(stderr),
             ):
-                exit_code = main(
-                    ["schedule", str(input_path), "-o", str(output_path)]
-                )
+                exit_code = main(["schedule", str(input_path), "-o", str(output_path)])
 
             self.assertEqual(output_path.read_text(encoding="utf-8"), "original")
             self.assertEqual(list(Path(directory).glob(".output.jsonl.*.tmp")), [])
@@ -205,9 +201,7 @@ class CliTests(unittest.TestCase):
             if os.name != "nt":
                 output_path.chmod(0o640)
 
-            exit_code = main(
-                ["schedule", str(input_path), "-o", str(output_path)]
-            )
+            exit_code = main(["schedule", str(input_path), "-o", str(output_path)])
 
             self.assertEqual(exit_code, 0)
             record = json.loads(output_path.read_text(encoding="utf-8"))
@@ -226,9 +220,7 @@ class CliTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            exit_code = main(
-                ["schedule", str(input_path), "-o", str(output_path)]
-            )
+            exit_code = main(["schedule", str(input_path), "-o", str(output_path)])
 
             self.assertEqual(exit_code, 0)
             self.assertEqual(output_path.stat().st_mode & 0o777, 0o600)
@@ -261,9 +253,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("duplicate notification id", stderr)
 
     def test_duplicate_json_key_is_rejected(self) -> None:
-        stderr = self._run_bad_input(
-            '{"id":"a","id":"b","arrival":0,"max_delay":0}\n'
-        )
+        stderr = self._run_bad_input('{"id":"a","id":"b","arrival":0,"max_delay":0}\n')
 
         self.assertIn("duplicate JSON field", stderr)
         self.assertIn("'id'", stderr)
@@ -278,9 +268,7 @@ class CliTests(unittest.TestCase):
                 self.assertIn(value, stderr)
 
     def test_unpaired_unicode_surrogate_is_rejected(self) -> None:
-        stderr = self._run_bad_input(
-            '{"id":"\\ud800","arrival":0,"max_delay":0}\n'
-        )
+        stderr = self._run_bad_input('{"id":"\\ud800","arrival":0,"max_delay":0}\n')
 
         self.assertIn("line 1", stderr)
         self.assertIn("valid Unicode scalar values", stderr)
@@ -313,9 +301,7 @@ class CliTests(unittest.TestCase):
             "expected a JSON object": "[]\n",
             "id must be a string": '{"id":1,"arrival":0,"max_delay":0}\n',
             "id must be non-empty": '{"id":"","arrival":0,"max_delay":0}\n',
-            "arrival must be an integer": (
-                '{"id":"n","arrival":true,"max_delay":0}\n'
-            ),
+            "arrival must be an integer": ('{"id":"n","arrival":true,"max_delay":0}\n'),
             "max_delay must be an integer": (
                 '{"id":"n","arrival":0,"max_delay":1.5}\n'
             ),
@@ -347,7 +333,7 @@ class CliTests(unittest.TestCase):
     def test_invalid_utf8_is_rejected_with_line_number(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             input_path = Path(directory) / "invalid.jsonl"
-            input_path.write_bytes(b'\xff\n')
+            input_path.write_bytes(b"\xff\n")
             stderr = io.StringIO()
 
             with redirect_stderr(stderr):
@@ -368,9 +354,10 @@ class CliTests(unittest.TestCase):
     def test_brackets_inside_strings_do_not_count_as_nesting(self) -> None:
         stdout = io.StringIO()
         source = "[" * (cli._MAX_JSON_DEPTH + 1)
-        trace = json.dumps(
-            {"id": "n", "source": source, "arrival": 0, "max_delay": 0}
-        ) + "\n"
+        trace = (
+            json.dumps({"id": "n", "source": source, "arrival": 0, "max_delay": 0})
+            + "\n"
+        )
 
         with patch("sys.stdin", io.StringIO(trace)), redirect_stdout(stdout):
             exit_code = main(["schedule"])
@@ -409,9 +396,7 @@ class CliTests(unittest.TestCase):
             stderr = io.StringIO()
 
             with redirect_stderr(stderr):
-                exit_code = main(
-                    ["schedule", str(input_path), "-o", str(output_path)]
-                )
+                exit_code = main(["schedule", str(input_path), "-o", str(output_path)])
 
         self.assertEqual(exit_code, 2)
         self.assertFalse(output_path.exists())
