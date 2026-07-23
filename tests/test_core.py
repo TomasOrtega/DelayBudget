@@ -104,15 +104,11 @@ class OnlineSchedulerTests(unittest.TestCase):
     def test_arms_and_moves_timer_earlier(self) -> None:
         scheduler = OnlineScheduler()
 
-        self.assertIsNone(
-            scheduler.advance(0, [Notification("email", 0, 20)])
-        )
+        self.assertIsNone(scheduler.advance(0, [Notification("email", 0, 20)]))
         self.assertEqual(scheduler.next_deadline, 20)
         self.assertEqual(scheduler.pending_count, 1)
 
-        self.assertIsNone(
-            scheduler.advance(5, [Notification("message", 5, 3)])
-        )
+        self.assertIsNone(scheduler.advance(5, [Notification("message", 5, 3)]))
         self.assertEqual(scheduler.current_time, 5)
         self.assertEqual(scheduler.next_deadline, 8)
         self.assertEqual(scheduler.pending_count, 2)
@@ -369,8 +365,7 @@ class ScheduleTests(unittest.TestCase):
 
     def test_schedule_accepts_a_generator(self) -> None:
         events = (
-            Notification(str(index), arrival=index, max_delay=2)
-            for index in range(3)
+            Notification(str(index), arrival=index, max_delay=2) for index in range(3)
         )
 
         self.assertEqual([batch.deliver_at for batch in schedule(events)], [2])
@@ -410,9 +405,7 @@ class ScheduleTests(unittest.TestCase):
         ]
 
         for size in range(1, 5):
-            for pattern in itertools.combinations_with_replacement(
-                intervals, size
-            ):
+            for pattern in itertools.combinations_with_replacement(intervals, size):
                 events = [
                     Notification(
                         id=f"n{index}",
@@ -438,10 +431,7 @@ def _run_online(events: list[Notification]) -> tuple[Batch, ...]:
     scheduler = OnlineScheduler()
     emitted: list[Batch] = []
     for arrival in sorted(by_arrival):
-        while (
-            scheduler.next_deadline is not None
-            and scheduler.next_deadline < arrival
-        ):
+        while scheduler.next_deadline is not None and scheduler.next_deadline < arrival:
             due = scheduler.advance(scheduler.next_deadline)
             assert due is not None
             emitted.append(due)
