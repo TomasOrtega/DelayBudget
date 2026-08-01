@@ -42,9 +42,9 @@ delaybudget = "delaybudget.cli:main"
 dev = [
   "coverage[toml]>=7.15.2,<8",
   "mypy>=1.15,<3",
-  "prek>=0.4,<1",
-  "ruff>=0.11,<1",
-  "twine>=6.1,<7",
+  "prek>=0.4.11,<1",
+  "ruff>=0.16.0,<1",
+  "twine>=7.0.0,<8",
 ]
 
 [tool.setuptools]
